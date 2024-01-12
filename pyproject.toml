@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "swrs-pytree"
-version = "1.0.2"
+version = "1.0.3"
 authors = [
 	{ name="Sawors", email="sawors@proton.me"},
 ]
@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 [project.scripts]
-pytree = "pytree:main"
+pytree = "pytree.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/Sawors/pytree"

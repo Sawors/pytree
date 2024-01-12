@@ -54,6 +54,8 @@ def main():
         return icons[extension] if extension in icons else icons["default"]
 
     dir_arg = [c for c in args if not c.startswith("-")]
+    if len(dir_arg) == 0:
+        dir_arg = [os.getcwd()]
     if len(dir_arg) > 0 and os.path.isdir(dir_arg[0]):
         fs_tree = Tree.fs_tree(dir_arg[0], recursive=("-R" in args), show_dir=True, full_path=("-f" in args))
         root = fs_tree.get_root()
