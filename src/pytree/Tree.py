@@ -346,68 +346,20 @@ class Tree:
     def fs_tree(path:str, full_path=False, recursive=True, show_dir=False):
         if not os.path.isdir(path):
             raise OSError("the path {path} is not a directory")
-        tree_name = path if full_path else path[path.rfind(PATH_SEPARATOR)+1:len(path)]
+        os_agnostic_path = path.replace(os.sep,PATH_SEPARATOR)
+        tree_name = os_agnostic_path if full_path else os_agnostic_path[os_agnostic_path.rfind(PATH_SEPARATOR)+1:len(os_agnostic_path)]
         tree = Tree(Node(tree_name))
         if recursive:
             for root, dirs, files in os.walk(path, topdown=False,followlinks=False):
                 for file in files:
-                    file_target = f"{root}/{file}".replace(path,"")
+                    file_target = f"{root}/{file}".replace(path,"").replace(os.sep,PATH_SEPARATOR)
                     tree.insert_from_path(file_target, create_missing_nodes=True, cache_node=True)
         else:
             for file in os.listdir(path):
-                file_target = f"/{file}".replace(path,"")
+                file_target = f"/{file}"
                 node = tree.insert_from_path(file_target, create_missing_nodes=True, cache_node=True)
-                if show_dir and os.path.isdir(f"{path}/{file}"):
+                if show_dir and os.path.isdir(f"{path}{os.sep}{file}"):
                     display_node = Node("")
                     display_node.print_hints.append(Node.PRINT_IGNORE_HINT)
                     node.add(display_node)
         return tree
-    
-if __name__ == "__main__":
-    args = os.sys.argv[1:len(os.sys.argv)]
-
-    for index, arg in enumerate(args):
-        pass
-    
-    icons = {
-        "default": "󰈔 ",".txt": "󰈙 ", "": "",
-        # images
-        ".png": "󰺰 ",".jpg": "󰈟 ",".jpeg": "󰈟 ",".webp": "󰈟 ",".svg": "󰕣 ",".bmp": "󰈟 ",".gif": "󱀺 ",".raw": "󱨏 ",
-        # video
-        ".mp4": "󰈫 ",".avi": "󰈫 ",".mpeg-4": "󰈫 ",".mkv": "󰈫 ",".mov": "󰈫 ",".webm": "󰈫 ",".flv": "󰈫 ",
-        # sound
-        ".mp3": "󰈣 ",".ogg": "󰈣 ",".wav": "󰈣 ",".m4a": "󰈣 ",".flac": "󱨏 ",".aac": "󰈣 ",
-        # Libre Office
-        ".odt": "󰈙 ",".ods": "󰱾 ",".odp": "󰈧 ",".odg": "󰈕 ",".odf": "󰠞 ",
-        # Microsoft Office
-        ".docx": "󰈬 ",".ppt": "󰈧 ",".xlsx": "󰈛 ",
-        # code
-        ".java": "󰬷 ",".js": "󰌞 ",".c": "󰙱 ",".cpp": "󰙲 ",".cs": "󰌛 ",".go": "󰟓 ",".hs": "󰲒 ",".lhs": "󰲒 ",".html": "󰌝 ",".kt": "󱈙 ",".lua": "󰢱 ",".md": "󰍔 ",".php": "󰌟 ",".py": "󰌠 ",".r": "󰟔 ",".ruby": "󰴭 ",".rc": "󱘗 ",".swift": "󰛥 ",".ts": "󰛦 ",".xml": "󰈮 ",
-        # config
-        ".json": "󰈮 ",".yml": "󱁻 ",".yaml": "󱁻 ",".conf": "󱁻 ",".toml": "󱁻 ",".rasi": "󱁻 ",".ini": "󱁻 ",
-        # 3D
-        ".stl": "󰐫 ",".3mf": "󰐫 ",".blend": "󰂫 ",".obj": "󰆦 ",".kmz": "󰆦 ",".fbx": "󰆦 ",".3ds": "󰆦 ",".cad": "󰻫 ",
-        # archives
-        ".pdf": "󱅷 ",".gpg": "󰈡 ",".gz": "󰛫 ",".zip": "󰛫 ",".7z": "󰛫 ",".tar": "󰀼 ",".deb": "󰀼 ",".rpm": "󰀼 ",
-    }
-    def get_icon(node:Node) -> str:
-        if Node.PRINT_NO_ICON_HINT in node.print_hints: return ""
-        if node.is_root():
-            return "󰙅 "
-        if len(node._children) > 0:
-            return "󰉋 "
-        name = node.name.lower()
-        extension = name
-        if "." in name:
-            extension = name[name.rfind("."):len(name)]
-        return icons[extension] if extension in icons else icons["default"]
-    
-    dir_arg = [c for c in args if not c.startswith("-")]
-    if len(dir_arg) > 0 and os.path.isdir(dir_arg[0]):
-        fs_tree = Tree.fs_tree(dir_arg[0], recursive=("-R" in args), show_dir=True)
-        root = fs_tree.get_root()
-        nodes = root.get_all_inheritance()
-        root.name = get_icon(root)+root.name
-        for node in nodes:
-           node.name = get_icon(node)+node.name 
-        print(fs_tree)

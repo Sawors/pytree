@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytree"
+version = "1.0.0"
+authors = [
+	{ name="Sawors", email="sawors@proton.me"},
+]
+description = "A tree implementation for Python"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+	"natsort >= 8.4.0" 
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+	"License :: OSI Approved :: Apache Software License",
+]
+
+[project.scripts]
+cli-name = "pytree.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/Sawors/pytree"
+Issues = "https://github.com/Sawors/pytree/issues"
