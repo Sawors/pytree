@@ -268,7 +268,7 @@ class Tree:
     # the path is the path to the parent, and the node is inserted
     # as a child if the parent is an endpoint, otherwise the insert_mode
     # resolution method is applied.
-    def insert(self, path:str, node:Node, create_missing_nodes=False, cache_node=False, insert_mode=InsertMode.MAKE_CHILD):
+    def insert(self, path:str, node:Node, create_missing_nodes=False, cache_node=False, insert_mode=InsertMode.MAKE_CHILD) -> Node:
         formated_path = self.get_formatted_path(path)
         # so here target is the parent node in which our node will be inserted
         target = self.get_node(formated_path, unknown_raise_exception=False)
@@ -313,20 +313,22 @@ class Tree:
                 node.add(old_children)
                 old_parent.remove(target)
                 old_parent.add(node)
-
+                
         if cache_node:
             self.add_to_cache(node)
+            
+        return node
 
     # this time create a new node at the path. The name of the new node
     # is the last part of the path. For instance insert("/home/test/file")
     # is equivalent to insert("/home/test", Node("file")).
     # An error will be raised if the node already exists.
-    def insert_from_path(self, path:str, create_missing_nodes=False, cache_node=False, insert_mode=InsertMode.MAKE_CHILD) -> Node:
+    # By default it will try to create the missing nodes.
+    def insert_from_path(self, path:str, create_missing_nodes=True, cache_node=False, insert_mode=InsertMode.MAKE_CHILD) -> Node:
         tree = path.split(PATH_SEPARATOR)
         node = Node(tree[len(tree)-1])
         sub_path = PATH_SEPARATOR.join(tree[0:len(tree)-1])
-        self.insert(sub_path, node, create_missing_nodes=create_missing_nodes, cache_node=cache_node, insert_mode=insert_mode)
-        return node
+        return self.insert(sub_path, node, create_missing_nodes=create_missing_nodes, cache_node=cache_node, insert_mode=insert_mode)
 
     def __str__(self):
         return self._root.get_tree_print()

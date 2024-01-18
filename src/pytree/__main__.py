@@ -36,22 +36,23 @@ icons = {
     ".deb": "󰀼 ",".rpm": "󰀼 ",
 }
 
+
+def get_icon(node:Node) -> str:
+    if Node.PRINT_NO_ICON_HINT in node.print_hints:
+        return ""
+    if node.is_root():
+        return TREE_ROOT_ICON
+    if len(node.get_children()) > 0:
+        return DIR_ICON
+    name = node.name.lower()
+    extension = name
+    if "." in name:
+        extension = name[name.rfind("."):len(name)]
+    return icons[extension] if extension in icons else icons["default"]
+
 def main():
     """Print a tree from the file system."""
     args = os.sys.argv[1:len(os.sys.argv)]
-
-    def get_icon(node:Node) -> str:
-        if Node.PRINT_NO_ICON_HINT in node.print_hints:
-            return ""
-        if node.is_root():
-            return TREE_ROOT_ICON
-        if len(node.get_children()) > 0:
-            return DIR_ICON
-        name = node.name.lower()
-        extension = name
-        if "." in name:
-            extension = name[name.rfind("."):len(name)]
-        return icons[extension] if extension in icons else icons["default"]
 
     dir_arg = [c for c in args if not c.startswith("-")]
     if len(dir_arg) == 0:
